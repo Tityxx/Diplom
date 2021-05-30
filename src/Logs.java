@@ -1,5 +1,6 @@
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 
 /**
  * Вывод и очистка логов
@@ -23,6 +24,17 @@ public class Logs extends Pane
     public void Print(String log)
     {
         logsPanel.getChildren().addAll(new Label(log));
+    }
+
+    /**
+     * Добавление нового лога ошибки
+     * @param log
+     */
+    public void PrintError(String log)
+    {
+        Label label = new Label(log);
+        label.setTextFill(Color.RED);
+        logsPanel.getChildren().addAll(label);
     }
 
     /**

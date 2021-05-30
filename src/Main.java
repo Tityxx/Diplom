@@ -42,7 +42,7 @@ public class Main extends Application
     private MenuItem longFileMI = new MenuItem("Файл подробно");
     private MenuItem loadFileMI = new MenuItem("Загрузить файл");
 
-    private Settings settings = new Settings();
+    private Settings settings;
     private Logs logs = new Logs(leftVbox, rightVbox);
 
     public static void main(String[] args)
@@ -57,6 +57,7 @@ public class Main extends Application
         Rectangle2D rec = Screen.getPrimary().getBounds();
         HEIGHT = (int)(rec.getHeight() / WINDOW_COEFF);
         WIDTH = (int)(rec.getWidth() / WINDOW_COEFF);
+        settings = new Settings(logs);
 
         InitPanels();
         InitView();
@@ -66,6 +67,7 @@ public class Main extends Application
     private void InitPanels()
     {
         mainWindow.setTitle("Диплом");
+        mainWindow.setResizable(false);
 
         root.getChildren().addAll(leftScrollPane, rightScrollPane, menuBar);
         leftScrollPane.setContent(leftVbox);
