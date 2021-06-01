@@ -20,14 +20,19 @@ public class Settings
     public double LastFreq = 30;                 // Верхняя граница частоты при поиске максимусов
     public int  P_BlockSize = 1;                 // Количество блоков по 1024 отсчета
     public int  P_OverProc = 50;                 // Процент перекрытия окна
-    public int  Smooth = 30;                    // Циклов сглаживания
+    public int  Smooth = 30;                     // Циклов сглаживания
     public int  MeasureDuration = 10;            // Время снятия вибрации в сек (1...300)
     public int  NTrendPoints = 50;               // Точек при сглаживании тренда =0 - отключено
     public int  WinFun = FFT.WinModeRectangle;   // Вид функции окна
     public String MeasureGroup = "СМ-300";       // Подпись группы
     public String MeasureTitle = "Опора 125";    // Подпись опоры
     public int MeasureCounter = 1;               // Счетчик измерения
-    public boolean FullInfo=false;                      // Данные отладки
+    public boolean FullInfo=false;               // Данные отладки
+
+    public double FreqStep = 0;
+    public final int KF100 = FFT.sizeHZ / 100;
+    public int NoFirstPoints = 20;           // Отрезать точек справа и слева
+    public int NoLastPoints = 1000;
 
     private int WIDTH;
     private int HEIGHT;

@@ -11,6 +11,8 @@ import javafx.scene.paint.Color;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
+import java.io.FileNotFoundException;
+
 public class Main extends Application
 {
     public static int HEIGHT;
@@ -99,11 +101,6 @@ public class Main extends Application
         rightScrollPane.setPadding(new Insets(0, 10, 0, 20));
         rightScrollPane.setTranslateX(WIDTH / 6);
         rightScrollPane.setTranslateY(offsetY);
-
-        for (int i = 0; i < 100; i++)
-        {
-            logs.Print(String.valueOf(i));
-        }
     }
 
     private void InitControls()
@@ -112,6 +109,17 @@ public class Main extends Application
         loadFileMI.setOnAction(e -> OnClickLoadFile());
         clearLogsMI.setOnAction(e -> OnClickClearLogs());
         clearGraphsMI.setOnAction(e -> OnClickClearGraphs());
+        shortFileMI.setOnAction(e ->
+        {
+            try
+            {
+                OnClickFileShort();
+            }
+            catch (Throwable fileNotFoundException)
+            {
+                fileNotFoundException.printStackTrace();
+            }
+        });
     }
 
     private void OnClickLoadFile()
@@ -127,5 +135,11 @@ public class Main extends Application
     private void OnClickClearGraphs()
     {
         logs.ClearGraphs();
+    }
+
+    private void OnClickFileShort() throws Throwable
+    {
+        settings.FullInfo = false;
+        (new FileController(mainWindow, logs, settings)).OpenFile();
     }
 }
