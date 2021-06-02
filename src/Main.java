@@ -131,6 +131,13 @@ public class Main extends Application
                 fileNotFoundException.printStackTrace();
             }
         });
+        createWaveImageMI.setOnAction(e -> {
+            try {
+                (new FileController(mainWindow, logs, settings)).CreateWave();
+            } catch (Throwable fileNotFoundException) {
+                fileNotFoundException.printStackTrace();
+            }
+        });
     }
 
     private void OnClickLoadFile()

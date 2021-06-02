@@ -1,15 +1,22 @@
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.ui.ApplicationFrame;
 import romanow.snn_simulator.layer.Extreme;
 import romanow.snn_simulator.layer.LayerStatistic;
 
 import java.util.ArrayList;
 
-public class Statistic
+public class Statistic extends ApplicationFrame
 {
     private Settings settings;
     private Logs logs;
 
-    public Statistic(Settings _settings, Logs _logs)
+    public Statistic(Settings _settings, Logs _logs, String applicationTitle)
     {
+        super(applicationTitle);
         settings = _settings;
         logs = _logs;
     }
@@ -39,7 +46,7 @@ public class Statistic
         logs.Print();
     }
 
-    public synchronized void showStatistic(LayerStatistic inputStat)
+    private synchronized void showStatistic(LayerStatistic inputStat)
     {
         showExtrems(inputStat, true);
         showExtrems(inputStat, false);
@@ -76,5 +83,37 @@ public class Statistic
         }
         logs.Print(String.format("Средний - %d%% к первому", (int)(sum / (count - 1))));
         logs.Print();
+    }
+
+    public synchronized void addGraphView(LayerStatistic inputStat)
+    {
+        paintOne(inputStat.getMids(),0,0,true);
+        //colorNum++;
+
+        pack();
+        this.setVisible(true);
+    }
+
+    public void paintOne(float data[], int noFirst, int noLast, boolean freqMode)
+    {
+        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+        double zz[] = new double[data.length-noFirst-noLast];
+
+        for(int j=noFirst;j<data.length-noLast;j++)                 // Подпись значений факторов j-ой ячейки
+        {
+            double freq = freqMode ? (j*50./data.length) : (j/100.);
+            zz[j-noFirst] = freq;
+            dataset.addValue(data[j-noFirst], "", String.valueOf(freq));
+        }
+        JFreeChart lineChart = ChartFactory.createLineChart(
+                "Название",
+                "Время","Значения",
+                dataset,
+                PlotOrientation.VERTICAL,
+                true,true,false);
+
+        ChartPanel chartPanel = new ChartPanel( lineChart );
+        chartPanel.setPreferredSize( new java.awt.Dimension( 560 , 367 ) );
+        setContentPane(chartPanel);
     }
 }

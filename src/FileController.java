@@ -91,4 +91,41 @@ public class FileController
         //fft.fftDirect(xx,back);
         fft.fftDirect(xx,new FFTAdapter(logs, settings,title));
     }
+
+    public void CreateWave() throws Throwable
+    {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Text Files", "*.txt"));
+        currFile = fileChooser.showOpenDialog(stage);
+        Pair<InputStream, FileDescription> res = openSelected(currFile);
+        InputStream is = res.o1;
+        if (is==null)
+        {
+            return;
+        }
+        ProcessWaveInputStream(is,res.o2.toString());
+    }
+
+    public void ProcessWaveInputStream(InputStream is, String title) throws Throwable
+    {
+        logs.Print(title);
+        FFTAudioTextFile xx = new FFTAudioTextFile();
+        xx.readData(new BufferedReader(new InputStreamReader(is, "Windows-1251")));
+        procWaveForm(xx);
+    }
+
+    private void procWaveForm(FFTAudioTextFile currentWave)
+    {
+        int firstPoint = (int)(0*100);
+        int size = currentWave.getData().length;
+        int count = size/1;
+        int lastPoint = size - firstPoint - count;
+        if (lastPoint<0) lastPoint=0;
+        Statistic statistic = new Statistic(settings, logs, "Волна");
+        statistic.paintOne(currentWave.getData(),firstPoint,lastPoint,false);
+        statistic.pack();
+        statistic.setVisible(true);
+        logs.Print();
+    }
 }

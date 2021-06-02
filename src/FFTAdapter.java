@@ -29,10 +29,9 @@ public class FFTAdapter implements FFTCallBack
             return;
         }
         inputStat.smooth(settings.Smooth);
-        Statistic statistic = new Statistic(settings, logs);
+        Statistic statistic = new Statistic(settings, logs, "Статистка");
         statistic.showStatisticFull(inputStat);
-        //TODO: Сделать граф
-        //statistic.addGraphView(inputStat);
+        statistic.addGraphView(inputStat);
     }
 
     @Override
@@ -59,7 +58,6 @@ public class FFTAdapter implements FFTCallBack
     public void onMessage(String mes)
     {
         logs.Print(mes);
-        System.out.println(mes);
     }
 
 }
