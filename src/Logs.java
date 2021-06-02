@@ -28,6 +28,14 @@ public class Logs extends Pane
     }
 
     /**
+     * Печать пустого лога
+     */
+    public void Print()
+    {
+        logsPanel.getChildren().addAll(new Label(""));
+    }
+
+    /**
      * Добавление нового лога ошибки
      * @param log
      */

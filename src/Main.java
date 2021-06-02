@@ -91,15 +91,15 @@ public class Main extends Application
 
         int offsetY = (int)menuBar.getHeight();
 
-        leftScrollPane.setPrefWidth(WIDTH / 6);
+        leftScrollPane.setPrefWidth(WIDTH / 4);
         leftScrollPane.setPrefHeight(HEIGHT - offsetY);
         leftScrollPane.setPadding(new Insets(0, 0, 0, 10));
         leftScrollPane.setTranslateY(offsetY);
 
-        rightScrollPane.setPrefWidth(WIDTH - (WIDTH / 6));
+        rightScrollPane.setPrefWidth(WIDTH - (WIDTH / 4));
         rightScrollPane.setPrefHeight(HEIGHT - offsetY);
         rightScrollPane.setPadding(new Insets(0, 10, 0, 20));
-        rightScrollPane.setTranslateX(WIDTH / 6);
+        rightScrollPane.setTranslateX(WIDTH / 4);
         rightScrollPane.setTranslateY(offsetY);
     }
 
@@ -113,7 +113,18 @@ public class Main extends Application
         {
             try
             {
-                OnClickFileShort();
+                OnClickFile(false);
+            }
+            catch (Throwable fileNotFoundException)
+            {
+                fileNotFoundException.printStackTrace();
+            }
+        });
+        longFileMI.setOnAction(e ->
+        {
+            try
+            {
+                OnClickFile(true);
             }
             catch (Throwable fileNotFoundException)
             {
@@ -137,9 +148,9 @@ public class Main extends Application
         logs.ClearGraphs();
     }
 
-    private void OnClickFileShort() throws Throwable
+    private void OnClickFile(boolean fullInfo) throws Throwable
     {
-        settings.FullInfo = false;
+        settings.FullInfo = fullInfo;
         (new FileController(mainWindow, logs, settings)).OpenFile();
     }
 }

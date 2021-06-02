@@ -31,8 +31,10 @@ public class Settings
 
     public double FreqStep = 0;
     public final int KF100 = FFT.sizeHZ / 100;
-    public int NoFirstPoints = 20;           // Отрезать точек справа и слева
-    public int NoLastPoints = 1000;
+
+    public int NFirstMax=10;                    // Количество максимумов в статистике (вывод)
+    public int NoFirstPoints = 20;              // Отрезать точек справа и слева
+    public int NoLastPoints = 20;
 
     private int WIDTH;
     private int HEIGHT;
