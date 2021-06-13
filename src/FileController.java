@@ -5,9 +5,14 @@ import romanow.snn_simulator.fft.FFTAudioTextFile;
 import romanow.snn_simulator.fft.FFTParams;
 
 import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 
 public class FileController
 {
+    private String dir = "C:/";
+
     private Stage stage;
     private Logs logs;
     private Settings settings;
@@ -16,6 +21,9 @@ public class FileController
 
     public FileController(Stage _stage, Logs _logs, Settings _settings)
     {
+        Path currentRelativePath = Paths.get("");
+        dir = currentRelativePath.toAbsolutePath().toString();
+
         stage = _stage;
         logs = _logs;
         settings = _settings;
@@ -48,9 +56,7 @@ public class FileController
      */
     public Pair<InputStream, FileDescription> openSelected(File file) throws FileNotFoundException
     {
-        String ss = file.getName();
-
-        FileDescription description = new FileDescription(ss);
+        FileDescription description = new FileDescription(file.getName());
         String out = description.parseFromName();
         if (out!=null){
             logs.Print("Имя файла: "+out);
@@ -74,8 +80,6 @@ public class FileController
         xx.readData(new BufferedReader(new InputStreamReader(is, "Windows-1251")));
         xx.removeTrend(settings.NTrendPoints);
         long lnt = xx.getFrameLength();
-        //for(p_BlockSize=1;p_BlockSize*FFT.Size0<=lnt;p_BlockSize*=2);
-        //if (p_BlockSize!=1) p_BlockSize/=2;
         FFTParams params = new FFTParams().W(settings.P_BlockSize * FFT.Size0).procOver(settings.P_OverProc).
                 FFTWindowReduce(false).p_Cohleogram(false).p_GPU(false).compressMode(false).
                 winMode(settings.WinFun);
@@ -124,8 +128,78 @@ public class FileController
         if (lastPoint<0) lastPoint=0;
         Statistic statistic = new Statistic(settings, logs, "Волна");
         statistic.paintOne(currentWave.getData(),firstPoint,lastPoint,false);
-        statistic.pack();
-        statistic.setVisible(true);
+        //statistic.pack();
+        //statistic.setVisible(true);
         logs.Print();
+    }
+
+    private  I_ArchiveSelector convertSelector = new I_ArchiveSelector()
+    {
+        @Override
+        public void onSelect(FileDescription fd, boolean longClick) {
+            String pathName = dir + "/" + fd.originalFileName;
+            FFTAudioTextFile xx = new FFTAudioTextFile();
+            xx.setnPoints(settings.NTrendPoints);
+            //hideFFTOutput=false;
+            xx.convertToWave(pathName, new FFTAdapter(logs, settings, fd.toString()));
+        }
+    };
+
+    public void selectFromArchive(String title, final I_ArchiveSelector selector)
+    {
+        final ArrayList<FileDescription> ss = createArchive();
+        ArrayList<String> out = new ArrayList<>();
+        for(FileDescription ff : ss)
+        {
+            out.add(ff.toString());
+        }
+        /*new ListBoxDialog(this, out, title, new I_ListBoxListener() {
+            @Override
+            public void onSelect(int index) {
+                selector.onSelect(ss.get(index),false);
+            }
+            @Override
+            public void onLongSelect(int index) {
+                selector.onSelect(ss.get(index),true);
+            }
+        }).create();*/
+    }
+
+    public ArrayList<FileDescription> createArchive()
+    {
+        return createArchive(null);
+    }
+    public ArrayList<FileDescription> createArchive(String subdir)
+    {
+        File ff = new File(dir + (subdir!=null ? "/"+subdir : ""));
+        if (!ff.exists())
+        {
+            ff.mkdir();
+        }
+        FileDescriptionList out = new FileDescriptionList();
+        for(String ss : ff.list())
+        {
+            File file = new File(dir + "/" + ss);
+            if (file.isDirectory())
+            {
+                continue;
+            }
+            FileDescription dd = new FileDescription(ss);
+            if (!dd.originalFileName.toUpperCase().endsWith(".TXT"))
+            {
+                continue;
+            }
+            String zz = dd.parseFromName();
+            if (zz!=null)
+            {
+                logs.Print("Файл: " + ss + " " + zz);
+            }
+            else
+            {
+                out.add(dd);
+            }
+        }
+        out.sort((I_FDComparator) (o2, o1) -> (int)(o2.createDate.getMillis() - o1.createDate.getMillis()));
+        return out;
     }
 }

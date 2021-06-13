@@ -1,3 +1,7 @@
+import javafx.scene.chart.Axis;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -9,14 +13,14 @@ import romanow.snn_simulator.layer.LayerStatistic;
 
 import java.util.ArrayList;
 
-public class Statistic extends ApplicationFrame
+public class Statistic
 {
     private Settings settings;
     private Logs logs;
 
     public Statistic(Settings _settings, Logs _logs, String applicationTitle)
     {
-        super(applicationTitle);
+        //super(applicationTitle);
         settings = _settings;
         logs = _logs;
     }
@@ -88,32 +92,21 @@ public class Statistic extends ApplicationFrame
     public synchronized void addGraphView(LayerStatistic inputStat)
     {
         paintOne(inputStat.getMids(),0,0,true);
-        //colorNum++;
-
-        pack();
-        this.setVisible(true);
     }
 
     public void paintOne(float data[], int noFirst, int noLast, boolean freqMode)
     {
-        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-        double zz[] = new double[data.length-noFirst-noLast];
+        XYChart.Series<Double, Float> series = new XYChart.Series<>();
 
         for(int j=noFirst;j<data.length-noLast;j++)                 // Подпись значений факторов j-ой ячейки
         {
             double freq = freqMode ? (j*50./data.length) : (j/100.);
-            zz[j-noFirst] = freq;
-            dataset.addValue(data[j-noFirst], "", String.valueOf(freq));
+            series.getData().add(new XYChart.Data<>(freq, data[j-noFirst]));
         }
-        JFreeChart lineChart = ChartFactory.createLineChart(
-                "Название",
-                "Время","Значения",
-                dataset,
-                PlotOrientation.VERTICAL,
-                true,true,false);
-
-        ChartPanel chartPanel = new ChartPanel( lineChart );
-        chartPanel.setPreferredSize( new java.awt.Dimension( 560 , 367 ) );
-        setContentPane(chartPanel);
+        LineChart lineChart = new LineChart(new NumberAxis(), new NumberAxis());
+        lineChart.setCreateSymbols(false);
+        lineChart.setLegendVisible(false);
+        lineChart.getData().add(series);
+        logs.Print(lineChart);
     }
 }

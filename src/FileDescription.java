@@ -4,6 +4,8 @@ import org.joda.time.format.DateTimeFormatter;
 
 import romanow.snn_simulator.fft.FFTAudioTextFile;
 
+import java.io.File;
+
 public class FileDescription extends FFTAudioTextFile
 {
     DateTime createDate = new DateTime();
@@ -44,12 +46,8 @@ public class FileDescription extends FFTAudioTextFile
     {
         return lepNumber+" "+srcNumber+"\n"+createDate.toString(DateTimeFormat.forPattern("dd-MM-yyyy HH:mm:ss"));
     }
-    public FileDescription(String fname)
+    public FileDescription(String name)
     {
-        originalFileName = fname;
-    }
-    public static void main(String ss[]){
-        FileDescription ff= new FileDescription("AAAAAAAAaaaaaaaa");
-        System.out.println(ff.parseFromName());
+        originalFileName = name;
     }
 }

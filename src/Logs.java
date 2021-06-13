@@ -1,3 +1,4 @@
+import javafx.scene.chart.LineChart;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -16,6 +17,15 @@ public class Logs extends Pane
         logsPanel = _logsPanel;
         graphsPanel = _graphsPanel;
         logsPanel.getChildren().addAll(new Label("Логи:"));
+    }
+
+    /**
+     * Добавление нового графа
+     * @param log
+     */
+    public void Print(LineChart log)
+    {
+        graphsPanel.getChildren().addAll(log);
     }
 
     /**

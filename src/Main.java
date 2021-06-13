@@ -10,8 +10,12 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import romanow.snn_simulator.fft.FFTAudioTextFile;
 
 import java.io.FileNotFoundException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 
 public class Main extends Application
 {
@@ -160,4 +164,6 @@ public class Main extends Application
         settings.FullInfo = fullInfo;
         (new FileController(mainWindow, logs, settings)).OpenFile();
     }
+
+
 }
