@@ -17,12 +17,13 @@ public class Statistic
 {
     private Settings settings;
     private Logs logs;
+    private boolean isConvertToWave = false;
 
-    public Statistic(Settings _settings, Logs _logs, String applicationTitle)
+    public Statistic(Settings _settings, Logs _logs, boolean _isConvertToWave)
     {
-        //super(applicationTitle);
         settings = _settings;
         logs = _logs;
+        isConvertToWave = _isConvertToWave;
     }
 
     public void showStatisticFull(LayerStatistic inputStat)
@@ -43,11 +44,11 @@ public class Statistic
                 true, settings.NoFirstPoints, settings.NoLastPoints,true);
         if (list.size() == 0)
         {
-            logs.PrintError("Экстремумов не найдено");
+            if (!isConvertToWave) logs.PrintError("Экстремумов не найдено");
             return;
         }
-        logs.Print(String.format("Основная частота=%6.4f гц", list.get(0).idx * settings.FreqStep));
-        logs.Print();
+        if (!isConvertToWave) logs.Print(String.format("Основная частота=%6.4f гц", list.get(0).idx * settings.FreqStep));
+        if (!isConvertToWave) logs.Print();
     }
 
     private synchronized void showStatistic(LayerStatistic inputStat)
@@ -59,7 +60,8 @@ public class Statistic
     private void showExtrems(LayerStatistic inputStat, boolean mode)
     {
         int sz = inputStat.getMids().length;
-        logs.Print(String.format("Диапазон экстремумов: %6.4f-%6.4f", 50. / sz * settings.NoFirstPoints,
+
+        if (!isConvertToWave) logs.Print(String.format("Диапазон экстремумов: %6.4f-%6.4f", 50. / sz * settings.NoFirstPoints,
                 50. / sz * (sz-settings.NoLastPoints)));
         ArrayList<Extreme> list = inputStat.createExtrems(mode, settings.NoFirstPoints, settings.NoLastPoints,true);
         if (list.size()==0){
@@ -68,13 +70,13 @@ public class Statistic
         }
         if (mode)
         {
-            logs.Print(String.format("Основная частота=%6.4f гц", list.get(0).idx * settings.FreqStep));
+            if (!isConvertToWave) logs.Print(String.format("Основная частота=%6.4f гц", list.get(0).idx * settings.FreqStep));
         }
         int count = settings.NFirstMax < list.size() ? settings.NFirstMax : list.size();
         Extreme extreme = list.get(0);
         double val0 = mode ? extreme.value : extreme.diff;
-        logs.Print(mode ? "По амплитуде" : "По спаду");
-        logs.Print(String.format("Ампл=%6.4f Пик=%6.4f f=%6.4f гц",
+        if (!isConvertToWave) logs.Print(mode ? "По амплитуде" : "По спаду");
+        if (!isConvertToWave) logs.Print(String.format("Ампл=%6.4f Пик=%6.4f f=%6.4f гц",
                 extreme.value, extreme.diff, extreme.idx * settings.FreqStep));
         double sum = 0;
         for(int i = 1; i < count; i++)
@@ -82,11 +84,11 @@ public class Statistic
             extreme = list.get(i);
             double proc = (mode ? extreme.value : extreme.diff) * 100 / val0;
             sum += proc;
-            logs.Print(String.format("Ампл=%6.4f Пик=%6.4f f=%6.4f гц %d%%", extreme.value, extreme.diff,
+            if (!isConvertToWave) logs.Print(String.format("Ампл=%6.4f Пик=%6.4f f=%6.4f гц %d%%", extreme.value, extreme.diff,
                     extreme.idx * settings.FreqStep, (int)proc));
         }
-        logs.Print(String.format("Средний - %d%% к первому", (int)(sum / (count - 1))));
-        logs.Print();
+        if (!isConvertToWave) logs.Print(String.format("Средний - %d%% к первому", (int)(sum / (count - 1))));
+        if (!isConvertToWave) logs.Print();
     }
 
     public synchronized void addGraphView(LayerStatistic inputStat)
@@ -101,7 +103,7 @@ public class Statistic
         for(int j=noFirst;j<data.length-noLast;j++)                 // Подпись значений факторов j-ой ячейки
         {
             double freq = freqMode ? (j*50./data.length) : (j/100.);
-            series.getData().add(new XYChart.Data<>(freq, data[j-noFirst]));
+            series.getData().add(new XYChart.Data<>(freq, data[j]));
         }
         LineChart lineChart = new LineChart(new NumberAxis(), new NumberAxis());
         lineChart.setCreateSymbols(false);

@@ -9,12 +9,14 @@ public class FFTAdapter implements FFTCallBack
     private LayerStatistic inputStat;
     private Logs logs;
     private Settings settings;
+    private boolean isConvertToWave = false;
 
-    public FFTAdapter(Logs _logs, Settings _settings, String title)
+    public FFTAdapter(Logs _logs, Settings _settings, String title, boolean _isConvertToWave)
     {
         inputStat = new LayerStatistic(title);
         logs = _logs;
         settings = _settings;
+        isConvertToWave = _isConvertToWave;
     }
 
     @Override
@@ -29,7 +31,7 @@ public class FFTAdapter implements FFTCallBack
             return;
         }
         inputStat.smooth(settings.Smooth);
-        Statistic statistic = new Statistic(settings, logs, "Статистка");
+        Statistic statistic = new Statistic(settings, logs, false);
         statistic.showStatisticFull(inputStat);
         statistic.addGraphView(inputStat);
     }

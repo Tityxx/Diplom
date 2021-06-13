@@ -113,6 +113,7 @@ public class Main extends Application
         loadFileMI.setOnAction(e -> OnClickLoadFile());
         clearLogsMI.setOnAction(e -> OnClickClearLogs());
         clearGraphsMI.setOnAction(e -> OnClickClearGraphs());
+        convertToWaveMI.setOnAction(e -> OnClickConvertToWaveFile());
         shortFileMI.setOnAction(e ->
         {
             try
@@ -136,8 +137,9 @@ public class Main extends Application
             }
         });
         createWaveImageMI.setOnAction(e -> {
-            try {
-                (new FileController(mainWindow, logs, settings)).CreateWave();
+            try
+            {
+                (new FileController(mainWindow, logs, settings, false)).CreateWave();
             } catch (Throwable fileNotFoundException) {
                 fileNotFoundException.printStackTrace();
             }
@@ -162,7 +164,12 @@ public class Main extends Application
     private void OnClickFile(boolean fullInfo) throws Throwable
     {
         settings.FullInfo = fullInfo;
-        (new FileController(mainWindow, logs, settings)).OpenFile();
+        (new FileController(mainWindow, logs, settings, false)).OpenFile();
+    }
+
+    private void OnClickConvertToWaveFile()
+    {
+        (new FileController(mainWindow, logs, settings, true)).ConvertToWaveFile();
     }
 
 
