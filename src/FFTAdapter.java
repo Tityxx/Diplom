@@ -9,14 +9,23 @@ public class FFTAdapter implements FFTCallBack
     private LayerStatistic inputStat;
     private Logs logs;
     private Settings settings;
-    private boolean isConvertToWave = false;
+    private Main.FuncType type;
+    private String path;
 
-    public FFTAdapter(Logs _logs, Settings _settings, String title, boolean _isConvertToWave)
+    public FFTAdapter(Logs _logs, Settings _settings, String title, Main.FuncType _type)
     {
         inputStat = new LayerStatistic(title);
         logs = _logs;
         settings = _settings;
-        isConvertToWave = _isConvertToWave;
+        type = _type;
+    }
+    public FFTAdapter(Logs _logs, Settings _settings, String title, Main.FuncType _type, String _path)
+    {
+        inputStat = new LayerStatistic(title);
+        logs = _logs;
+        settings = _settings;
+        type = _type;
+        path = _path;
     }
 
     @Override
@@ -31,9 +40,13 @@ public class FFTAdapter implements FFTCallBack
             return;
         }
         inputStat.smooth(settings.Smooth);
-        Statistic statistic = new Statistic(settings, logs, false);
+        Statistic statistic = new Statistic(settings, logs, type);
         statistic.showStatisticFull(inputStat);
         statistic.addGraphView(inputStat);
+        if (type == Main.FuncType.ConvertToJson)
+        {
+            statistic.SaveToJson(path, inputStat.getMids());
+        }
     }
 
     @Override

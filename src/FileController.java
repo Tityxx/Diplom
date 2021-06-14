@@ -18,9 +18,9 @@ public class FileController
     private Settings settings;
 
     private File currFile;
-    private boolean isConvertToWave = false;
+    private Main.FuncType type;
 
-    public FileController(Stage _stage, Logs _logs, Settings _settings, boolean _isConvertToWave)
+    public FileController(Stage _stage, Logs _logs, Settings _settings, Main.FuncType _type)
     {
         Path currentRelativePath = Paths.get("");
         dir = currentRelativePath.toAbsolutePath().toString();
@@ -28,7 +28,7 @@ public class FileController
         stage = _stage;
         logs = _logs;
         settings = _settings;
-        isConvertToWave = _isConvertToWave;
+        type = _type;
     }
 
     /**
@@ -89,11 +89,19 @@ public class FileController
         fft.setFFTParams(params);
         fft.calcFFTParams();
         settings.FreqStep = fft.getStepHZLinear()/settings.KF100;
-        if (!isConvertToWave) logs.Print("Отсчетов "+xx.getFrameLength());
-        if (!isConvertToWave) logs.Print("Кадр: "+ settings.P_BlockSize*FFT.Size0);
-        if (!isConvertToWave) logs.Print("Перекрытие: "+ settings.P_BlockSize);
-        if (!isConvertToWave) logs.Print("Дискретность: "+String.format("%5.4f", settings.FreqStep)+" гц");
-        fft.fftDirect(xx,new FFTAdapter(logs, settings,title, false));
+        if (type == Main.FuncType.ShowInfo) logs.Print("Отсчетов "+xx.getFrameLength());
+        if (type == Main.FuncType.ShowInfo) logs.Print("Кадр: "+ settings.P_BlockSize*FFT.Size0);
+        if (type == Main.FuncType.ShowInfo) logs.Print("Перекрытие: "+ settings.P_BlockSize);
+        if (type == Main.FuncType.ShowInfo) logs.Print("Дискретность: "+String.format("%5.4f", settings.FreqStep)+" гц");
+        if (type == Main.FuncType.ShowInfo)
+        {
+            fft.fftDirect(xx,new FFTAdapter(logs, settings,title, type));
+        }
+        else if (type == Main.FuncType.ConvertToJson)
+        {
+            fft.fftDirect(xx,new FFTAdapter(logs, settings,title, type, currFile.getPath()));
+        }
+
     }
 
     public void CreateWave() throws Throwable
@@ -126,7 +134,7 @@ public class FileController
         int count = size/1;
         int lastPoint = size - firstPoint - count;
         if (lastPoint<0) lastPoint=0;
-        Statistic statistic = new Statistic(settings, logs, false);
+        Statistic statistic = new Statistic(settings, logs, type);
         statistic.paintOne(currentWave.getData(),firstPoint,lastPoint,false);
         logs.Print();
     }
@@ -140,6 +148,11 @@ public class FileController
         FileDescription fd = new FileDescription(currFile.getName());
         FFTAudioTextFile xx = new FFTAudioTextFile();
         xx.setnPoints(settings.NTrendPoints);
-        xx.convertToWave(currFile.getPath(), new FFTAdapter(logs, settings, fd.toString(), false));
+        if (xx.convertToWave(currFile.getPath(), new FFTAdapter(logs, settings, fd.toString(), type)))
+        {
+            int k = currFile.getPath().lastIndexOf(".");
+            String path = currFile.getPath().substring(0, k)+".wav";
+            logs.Print("Сохранено в: " + path);
+        }
     }
 }

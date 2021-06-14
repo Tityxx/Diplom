@@ -1,24 +1,21 @@
 import javafx.application.Application;
 import javafx.geometry.Insets;
-import javafx.geometry.Orientation;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-import romanow.snn_simulator.fft.FFTAudioTextFile;
-
-import java.io.FileNotFoundException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 
 public class Main extends Application
 {
+    public enum FuncType
+    {
+        ShowInfo,
+        ConvertToJson
+    }
+
+
     public static int HEIGHT;
     public static int WIDTH;
 
@@ -38,15 +35,15 @@ public class Main extends Application
 
     private Menu menuMenu = new Menu("Меню");
 
-    private MenuItem openArchiveMI = new MenuItem("Архив");
     private MenuItem clearLogsMI = new MenuItem("Очистить ленту логов");
     private MenuItem clearGraphsMI = new MenuItem("Очистить ленту графиков");
+    private MenuItem clearAllMI = new MenuItem("Очистить обе ленты");
     private MenuItem settingsMI = new MenuItem("Настройки");
     private MenuItem createWaveImageMI = new MenuItem("Просмотр волны");
     private MenuItem convertToWaveMI = new MenuItem("Конвентировать в wave");
+    private MenuItem convertToJsonMI = new MenuItem("Конвентировать в json");
     private MenuItem shortFileMI = new MenuItem("Файл кратко");
     private MenuItem longFileMI = new MenuItem("Файл подробно");
-    private MenuItem loadFileMI = new MenuItem("Загрузить файл");
 
     private Settings settings;
     private Logs logs = new Logs(leftVbox, rightVbox);
@@ -81,8 +78,8 @@ public class Main extends Application
         rightScrollPane.setContent(rightVbox);
 
         menuBar.getMenus().addAll(menuMenu);
-        menuMenu.getItems().addAll(openArchiveMI, clearLogsMI, clearGraphsMI, createWaveImageMI,
-                convertToWaveMI, shortFileMI, longFileMI, settingsMI);
+        menuMenu.getItems().addAll(clearLogsMI, clearGraphsMI, clearAllMI,
+                convertToJsonMI, convertToWaveMI, createWaveImageMI, shortFileMI, longFileMI, settingsMI);
 
         scene = new Scene(root, WIDTH, HEIGHT);
         mainWindow.setScene(scene);
@@ -110,15 +107,19 @@ public class Main extends Application
     private void InitControls()
     {
         settingsMI.setOnAction(e -> settings.CreateWindow());
-        loadFileMI.setOnAction(e -> OnClickLoadFile());
         clearLogsMI.setOnAction(e -> OnClickClearLogs());
         clearGraphsMI.setOnAction(e -> OnClickClearGraphs());
+        clearAllMI.setOnAction(e ->
+        {
+            OnClickClearLogs();
+            OnClickClearGraphs();
+        });
         convertToWaveMI.setOnAction(e -> OnClickConvertToWaveFile());
         shortFileMI.setOnAction(e ->
         {
             try
             {
-                OnClickFile(false);
+                OnClickFile(false, FuncType.ShowInfo);
             }
             catch (Throwable fileNotFoundException)
             {
@@ -129,7 +130,7 @@ public class Main extends Application
         {
             try
             {
-                OnClickFile(true);
+                OnClickFile(true, FuncType.ShowInfo);
             }
             catch (Throwable fileNotFoundException)
             {
@@ -139,16 +140,22 @@ public class Main extends Application
         createWaveImageMI.setOnAction(e -> {
             try
             {
-                (new FileController(mainWindow, logs, settings, false)).CreateWave();
+                (new FileController(mainWindow, logs, settings, FuncType.ShowInfo)).CreateWave();
             } catch (Throwable fileNotFoundException) {
                 fileNotFoundException.printStackTrace();
             }
         });
-    }
-
-    private void OnClickLoadFile()
-    {
-        System.out.println("Work");
+        convertToJsonMI.setOnAction(e ->
+        {
+            try
+            {
+                OnClickFile(false, FuncType.ConvertToJson);
+            }
+            catch (Throwable fileNotFoundException)
+            {
+                fileNotFoundException.printStackTrace();
+            }
+        });
     }
 
     private void OnClickClearLogs()
@@ -161,15 +168,15 @@ public class Main extends Application
         logs.ClearGraphs();
     }
 
-    private void OnClickFile(boolean fullInfo) throws Throwable
+    private void OnClickFile(boolean fullInfo, FuncType type) throws Throwable
     {
         settings.FullInfo = fullInfo;
-        (new FileController(mainWindow, logs, settings, false)).OpenFile();
+        (new FileController(mainWindow, logs, settings, type)).OpenFile();
     }
 
     private void OnClickConvertToWaveFile()
     {
-        (new FileController(mainWindow, logs, settings, true)).ConvertToWaveFile();
+        (new FileController(mainWindow, logs, settings, FuncType.ConvertToJson)).ConvertToWaveFile();
     }
 
 

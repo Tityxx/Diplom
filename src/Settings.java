@@ -53,7 +53,7 @@ public class Settings
     private Button groupBtn = new Button("Группа");
     private Button propBtn = new Button("Опора");
     private Button measureCounterBtn = new Button("№ замера");
-    private Button fullInfoBtn = new Button("Данные отладки");
+    private Button fullInfoBtn = new Button("Полная информация");
 
     private TextField minFreqTF = new TextField();
     private TextField maxFreqTF = new TextField();
