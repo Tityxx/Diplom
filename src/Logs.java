@@ -2,7 +2,6 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 
 /**
  * Вывод и очистка логов
@@ -17,6 +16,7 @@ public class Logs extends Pane
         logsPanel = _logsPanel;
         graphsPanel = _graphsPanel;
         logsPanel.getChildren().addAll(new Label("Логи:"));
+        graphsPanel.getChildren().addAll(new Label("Графики:"));
     }
 
     /**
@@ -71,5 +71,6 @@ public class Logs extends Pane
     public void ClearGraphs()
     {
         graphsPanel.getChildren().clear();
+        graphsPanel.getChildren().addAll(new Label("Графики:"));
     }
 }
